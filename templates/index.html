@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardio Premium Specialist</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>Cardio Risk Validator</h1>
+            <p>Advanced AI-driven assessment for cardiovascular health and insurance premium tiering.</p>
+        </div>
+
+        <!-- Educational / Info Grid -->
+        <div class="info-grid">
+            <!-- Model Architecture Card -->
+            <div class="card">
+                <h3><span class="card-icon">🧠</span> AI Model Architecture</h3>
+                <p><strong>Random Forest Classifier</strong></p>
+                <p>We utilize an ensemble learning method with <strong>100 decision trees</strong> to maximize
+                    prediction stability and accuracy.</p>
+                <div style="margin-top: 10px; font-size: 0.9em; color: var(--text-light);">
+                    <p>• <strong>Features:</strong> 11 Clinical factors</p>
+                    <p>• <strong>Accuracy:</strong> ~73% (Validated)</p>
+                </div>
+            </div>
+
+            <!-- Insurance Logic Card -->
+            <div class="card">
+                <h3><span class="card-icon">🛡️</span> Insurance Tiers</h3>
+                <p>Premiums are dynamically adjusted based on risk probability.</p>
+                <div style="margin-top: 15px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span>Standard (&lt;40%)</span>
+                        <span class="status-badge status-std">Low</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span>Silver (40-70%)</span>
+                        <span class="status-badge status-mod">Mod</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Gold (&gt;70%)</span>
+                        <span class="status-badge status-high">High</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works Card -->
+            <div class="card">
+                <h3><span class="card-icon">⚡</span> Real-time Processing</h3>
+                <p>1. <strong>Input Analysis:</strong> Data is normalized.</p>
+                <p>2. <strong>Inference:</strong> Model calculates risk %.</p>
+                <p>3. <strong>Decision:</strong> Thresholding determines tier.</p>
+                <p>4. <strong>Storage:</strong> Result secured in database.</p>
+            </div>
+        </div>
+
+        <!-- Main Application Form -->
+        <div class="prediction-section">
+            <h2 class="section-title">Patient Assessment Form</h2>
+
+            <form action="/predict" method="post">
+                <div class="form-grid">
+                    <!-- Personal Info -->
+                    <div class="form-group">
+                        <label for="patient_name">Patient Name</label>
+                        <input type="text" id="patient_name" name="patient_name" placeholder="John Doe" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Age (Years)</label>
+                        <input type="number" id="age" name="age" placeholder="e.g. 50" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender">
+                            <option value="1">Female</option>
+                            <option value="2">Male</option>
+                        </select>
+                    </div>
+
+                    <!-- Vitals -->
+                    <div class="form-group">
+                        <label for="height">Height (cm)</label>
+                        <input type="number" id="height" name="height" placeholder="175" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weight">Weight (kg)</label>
+                        <input type="number" id="weight" name="weight" placeholder="70" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ap_hi">Systolic BP (ap_hi)</label>
+                        <input type="number" id="ap_hi" name="ap_hi" placeholder="120" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ap_lo">Diastolic BP (ap_lo)</label>
+                        <input type="number" id="ap_lo" name="ap_lo" placeholder="80" required>
+                    </div>
+
+                    <!-- Labs & Habits -->
+                    <div class="form-group">
+                        <label for="cholesterol">Cholesterol</label>
+                        <select id="cholesterol" name="cholesterol">
+                            <option value="1">Normal</option>
+                            <option value="2">Above Normal</option>
+                            <option value="3">Well Above Normal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gluc">Glucose</label>
+                        <select id="gluc" name="gluc">
+                            <option value="1">Normal</option>
+                            <option value="2">Above Normal</option>
+                            <option value="3">Well Above Normal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="smoke">Smoking</label>
+                        <select id="smoke" name="smoke">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="alco">Alcohol Intake</label>
+                        <select id="alco" name="alco">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="active">Physical Activity</label>
+                        <select id="active" name="active">
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">Calculate Risk & Premium</button>
+            </form>
+
+            <!-- Results Display -->
+            {% if result %}
+            <div class="result-box">
+                <h2>{{ result }}</h2>
+                <div class="result-detail">Assessment complete. Record saved to database.</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Admin Link -->
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/dashboard" style="color: var(--accent-color); font-weight: 600;">View Admin Dashboard →</a>
+        </div>
+
+    </div>
+
+
+
+
+
+</body>
+
+</html>

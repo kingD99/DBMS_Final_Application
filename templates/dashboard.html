@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Physician Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+                <h1>Enterprise Analytics Dashboard</h1>
+                <p style="color: var(--text-light);">Real-time patient risk assessment overview</p>
+            </div>
+            <a href="{{ url_for('index') }}" class="btn-primary"
+                style="padding: 10px 20px; font-size: 0.9rem; width: auto; margin-top: 0; text-decoration: none;">+ New
+                Patient Assessment</a>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 30px;">
+
+        <!-- Live Interactive Stats Tiles -->
+        <div class="stat-grid-modern">
+            {% set total_patients = records|length %}
+
+            {# Calculate counts for 3 tiers #}
+            {# Note: We use flexible matching in case of legacy data, but primary logic is Standard/Moderate/High #}
+            {% set high_risk_cases = records | selectattr("insurance_premium", "equalto", "High") | list | length %}
+            {% set moderate_cases = records | selectattr("insurance_premium", "equalto", "Moderate") | list | length %}
+            {# Remainder is Standard/Low #}
+            {% set standard_cases = total_patients - high_risk_cases - moderate_cases %}
+
+            <div class="stat-tile-modern bg-gradient-blue">
+                <span class="stat-value">{{ total_patients }}</span>
+                <span class="stat-label">Total Patients</span>
+            </div>
+            <div class="stat-tile-modern bg-gradient-red">
+                <span class="stat-value">{{ high_risk_cases }}</span>
+                <span class="stat-label">Gold (High)</span>
+            </div>
+            <div class="stat-tile-modern bg-gradient-orange">
+                <span class="stat-value">{{ moderate_cases }}</span>
+                <span class="stat-label">Silver (Mod)</span>
+            </div>
+            <div class="stat-tile-modern bg-gradient-green">
+                <span class="stat-value">{{ standard_cases }}</span>
+                <span class="stat-label">Standard (Low)</span>
+            </div>
+        </div>
+        <h3 style="color: var(--primary-color); margin-bottom: 15px;">Recent Patient Records</h3>
+        <div style="overflow-x: auto; background: white; border-radius: var(--radius); box-shadow: var(--shadow-md);">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>BP (Hi/Lo)</th>
+                        <th>BMI Data</th>
+                        <th>Risk Probability</th>
+                        <th>Insurance Tier</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    {% if record.insurance_premium == 'High' %}
+                    {% set row_class = "status-high" %}
+                    {% elif record.insurance_premium == 'Moderate' %}
+                    {% set row_class = "status-mod" %}
+                    {% else %}
+                    {% set row_class = "status-std" %}
+                    {% endif %}
+                    <tr class="{{ row_class }}">
+                        <td>{{ record.id }}</td>
+                        <td>{{ record.name }}</td>
+                        <td>{{ record.age }}</td>
+                        <td>{{ record.ap_hi }} / {{ record.ap_lo }}</td>
+                        <td>{{ record.height }}cm / {{ record.weight }}kg</td>
+                        <td>{{ record.risk_probability }}</td>
+                        <td><strong>{{ record.insurance_premium }}</strong></td>
+                        <td>{{ record.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Data Processing Script -->
+    <script>
+        // Parse data from Server-side template
+        // We iterate specifically to build a clean JSON object for JS
+        const patients = [
+            {% for record in records %}
+        {
+            age: { { record.age } },
+            premium: "{{ record.insurance_premium }}"
+        },
+        {% endfor %}
+        ];
+
+        // 1. Calculate Summary Stats
+        const total = patients.length;
+        const highRisk = patients.filter(p => p.premium === 'High').length;
+        const standard = total - highRisk;
+        const standardRate = total > 0 ? ((standard / total) * 100).toFixed(1) : 0;
+
+
+
+
+    </script>
+
+
+
+
+</body>
+
+</html>
